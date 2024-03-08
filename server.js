@@ -2,6 +2,7 @@ const express = require('express')
 const app = express()
 const productRouter = require('./Routers/productsRouters')
 const categoriesRouter = require('./Routers/categoryRouters')
+const cartRouter = require('./Routers/cartRoutes')
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 
@@ -21,8 +22,9 @@ app.use('/category', categoriesRouter)
 app.use('/category/:id', categoriesRouter)
 app.use('/category/sorted', categoriesRouter)
 
-
-
+// cart Routes : 
+app.use('/cart', cartRouter)
+app.use('/cart/user/:id', cartRouter)
 
 
 
