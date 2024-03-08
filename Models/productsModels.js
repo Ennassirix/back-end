@@ -43,7 +43,15 @@ async function searchForProductByName(name) {
         throw error
     }
 }
-
+// sort a product ASC or DESC => http://localhost:3001/products/sorted/order?sort=price&order=DESC
+async function getSortedProducts(sort, order) {
+    try {
+        const [rows] = await pool.query(`SELECT * FROM products ORDER BY ${sort} ${order}`)
+        return rows;
+    } catch (error) {
+        throw error
+    }
+}
 // to update a product :
 async function updateProduct(id, data) {
     try {
@@ -86,5 +94,6 @@ module.exports = {
     searchForProductByName,
     updateProduct,
     deleteProduct,
-    createProduct
+    createProduct,
+    getSortedProducts
 }

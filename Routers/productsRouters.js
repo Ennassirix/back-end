@@ -32,6 +32,17 @@ router.get('/category/:category', async (req, res, next) => {
     }
 })
 
+router.get('/sorted/order', async (req, res, next) => {
+    try {
+        const sort = req.query.sort
+        const order = req.query.order
+        const product = await productModel.getSortedProducts(sort,order)
+        res.json(product)
+    } catch (error) {
+        next(error)
+    }
+})
+
 router.get('/search/:name', async (req, res, next) => {
     try {
         const name = req.params.name
