@@ -1,14 +1,32 @@
 const express = require('express')
 const router = express.Router()
+const bcrypt = require('bcrypt')
 const jwt = require('jsonwebtoken');
 const dotenv = require('dotenv')
 const userModels = require('../Models/userModels')
 dotenv.config();
-process.env.TOKEN_SECRET;
+const secret = process.env.TOKEN_SECRET
 
-// function generateAccessToken(username) {
-//     return jwt.sign(username, process.env.TOKEN_SECRET, { expiresIn: '1800s' });
-// }
+// get login :
+router.get('/login', async (req, res, next) => {
+    try {
+        const { email, password } = req.body;
+        const user = await userModels.findUserByEmail(email);
+        if (!user) {
+            return res.status(401).json({ error: 'Authentication failed' });
+        }
+        const passwordMatch = await bcrypt.compare(password, user.password);
+        if (!passwordMatch) {
+            return res.status(401).json({ error: 'Authentication failed' });
+        }
+        // Generate JWT token
+        const token = jwt.sign({ email: user.email, userId: user.id }, secret, { expiresIn: '1800s' });
+        res.status(200).json({ token });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: 'Login failed' });
+    }
+});
 
 router.post('/', async (req, res, next) => {
     try {
@@ -17,7 +35,7 @@ router.post('/', async (req, res, next) => {
             LastName: req.body.LastName,
             Email: req.body.Email,
             Password: req.body.Password,
-            PhoneNumbe: req.body.PhoneNumber
+            PhoneNumber: req.body.PhoneNumber
         }
         const user = await userModels.createUser(data)
         res.json(user)
@@ -52,7 +70,7 @@ router.put('/update/:id', async (req, res, next) => {
             Password: req.body.Password,
             PhoneNumbe: req.body.PhoneNumber
         }
-        const user = await userModels.updateUserInfo(data,id)
+        const user = await userModels.updateUserInfo(data, id)
         res.json(user)
     } catch (error) {
         next(error)

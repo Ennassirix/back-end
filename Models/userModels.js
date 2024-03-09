@@ -1,11 +1,24 @@
 const pool = require('../config/connect')
+const bcrypt = require('bcrypt');
 
+// Function to find a user by Email : 
+async function findUserByEmail(email) {
+    try {
+        const [rows] = await pool.query('SELECT * FROM Users WHERE Email = ?', [email]);
+        return rows[0];
+    } catch (error) {
+        console.error('Failed to find a user by email:', error);
+        throw error;
+    }
+}
 
 // create a user : 
 async function createUser(data) {
     try {
         const { FirstName, LastName, Email, Password, PhoneNumber } = data;
-        const [row] = await pool.query('INSERT INTO users(FirstName, LastName, Email, Password, PhoneNumber) VALUES (?,?,?,?,?)', [FirstName, LastName, Email, Password, PhoneNumber])
+        const hashPassword = await bcrypt.hash(Password, 10);
+        const [row] = await pool.query('INSERT INTO users(FirstName, LastName, Email, Password, PhoneNumber) VALUES (?,?,?,?,?)',
+            [FirstName, LastName, Email, hashPassword, PhoneNumber])
         return row
     } catch (error) {
         console.error('failed to create a user')
@@ -46,7 +59,7 @@ async function updateUserInfo(data, id) {
 // delete user
 async function deleteUser(id) {
     try {
-        const [row] = await pool.query('DELETE FROM users WHERE UserID = ?',[id])
+        const [row] = await pool.query('DELETE FROM users WHERE UserID = ?', [id])
         return row
     } catch (error) {
         console.error('')
@@ -58,5 +71,6 @@ module.exports = {
     getAllusers,
     getUserById,
     updateUserInfo,
-    deleteUser
+    deleteUser,
+    findUserByEmail
 }

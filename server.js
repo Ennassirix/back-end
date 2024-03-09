@@ -13,8 +13,6 @@ app.get('/', (req, res) => {
 })
 
 // jwt : 
-
-
 //
 
 // Products Routes : 
@@ -32,7 +30,8 @@ app.use('/category/sorted', categoriesRouter)
 app.use('/cart', cartRouter)
 app.use('/cart/user/:id', cartRouter)
 
-// user Routes : 
+// user Routes :
+app.use('/user/login', userRouter)
 app.use('/user',userRouter) // get all users/delete a user : => 
 app.use('/user/update/:id', userRouter) // => update : http://localhost:3001/user/update/2
 app.use('/user/id/:id', userRouter) // => http://localhost:3001/user/id/1

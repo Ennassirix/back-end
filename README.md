@@ -6,6 +6,7 @@ to detele => http://localhost:3001/user/${id}
 to update => http://localhost:3001/user/update/${id}
 to get user by id => http://localhost:3001/user/id/${id}
 to create a user => http://localhost:3001/user/createUser
+for log in => http://localhost:3001/user/login
 
 # Products API's
 create a product => http://localhost:3001/Products //data in the body
