@@ -1,12 +1,11 @@
 # back-end
 
 # user API's
-to get all users => http://localhost:3001/user
-to detele => http://localhost:3001/user/${id}
-to update => http://localhost:3001/user/update/${id}
-to get user by id => http://localhost:3001/user/id/${id}
-to create a user => http://localhost:3001/user/createUser
+
+to create a user => http://localhost:3001/user/register
 for log in => http://localhost:3001/user/login
+authentication => http://localhost:3001/user/authentication
+
 
 # Products API's
 create a product => http://localhost:3001/Products //data in the body

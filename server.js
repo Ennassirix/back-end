@@ -1,19 +1,28 @@
 const express = require('express')
 const app = express()
 const cors = require('cors')
+const cookieParser = require('cookie-parser')
 const productRouter = require('./Routers/productsRouters')
 const categoriesRouter = require('./Routers/categoryRouters')
 const cartRouter = require('./Routers/cartRoutes')
 const userRouter = require('./Routers/userRouters')
+
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
-app.use(cors())
-app.get('/', (req, res) => {
-    res.send('<h1>Work</h1>')
-})
+app.use(cors({
+    credentials: true,
+    origin: ['http://localhost:3000']
+}))
 
-// jwt : 
-//
+
+app.use(cookieParser());
+
+app.get('/', function (req, res) {
+    res.json({ meassage  : 'working'})
+
+});
+
+
 
 // Products Routes : 
 app.use('/products', productRouter)
@@ -31,11 +40,8 @@ app.use('/cart', cartRouter)
 app.use('/cart/user/:id', cartRouter)
 
 // user Routes :
-app.use('/user/login', userRouter)
-app.use('/user',userRouter) // get all users/delete a user : => 
-app.use('/user/update/:id', userRouter) // => update : http://localhost:3001/user/update/2
-app.use('/user/id/:id', userRouter) // => http://localhost:3001/user/id/1
-app.use('/user/createUser', userRouter) // http://localhost:3001/user/createUser
+app.use('/user', userRouter) // get all users/delete a user : => 
+
 
 
 

@@ -1,34 +1,10 @@
 const express = require('express')
 const router = express.Router()
-const bcrypt = require('bcrypt')
-const jwt = require('jsonwebtoken');
-const dotenv = require('dotenv')
 const userModels = require('../Models/userModels')
-dotenv.config();
-const secret = process.env.TOKEN_SECRET
-
-// get login :
-router.get('/login', async (req, res, next) => {
-    try {
-        const { email, password } = req.body;
-        const user = await userModels.findUserByEmail(email);
-        if (!user) {
-            return res.status(401).json({ error: 'Authentication failed' });
-        }
-        const passwordMatch = await bcrypt.compare(password, user.password);
-        if (!passwordMatch) {
-            return res.status(401).json({ error: 'Authentication failed' });
-        }
-        // Generate JWT token
-        const token = jwt.sign({ email: user.email, userId: user.id }, secret, { expiresIn: '1800s' });
-        res.status(200).json({ token });
-    } catch (error) {
-        console.error(error);
-        res.status(500).json({ error: 'Login failed' });
-    }
-});
-
-router.post('/', async (req, res, next) => {
+const bcrypt = require('bcrypt')
+const jwt = require('jsonwebtoken')
+// /register
+router.post('/register', async (req, res) => {
     try {
         const data = {
             FirstName: req.body.FirstName,
@@ -37,53 +13,84 @@ router.post('/', async (req, res, next) => {
             Password: req.body.Password,
             PhoneNumber: req.body.PhoneNumber
         }
-        const user = await userModels.createUser(data)
-        res.json(user)
+        const user = await userModels.createUser(data);
+        res.status(201).json(user);
     } catch (error) {
-        next(error)
+        console.error('Failed to add user:', error);
+        res.status(500).json({ error: 'Failed to add user' });
     }
-})
-router.get('/', async (req, res, next) => {
+});
+
+// /login
+router.post('/login', async (req, res) => {
     try {
-        const users = await userModels.getAllusers()
-        res.json(users)
-    } catch (error) {
-        next(error)
-    }
-})
-router.get('/id/:id', async (req, res, next) => {
-    try {
-        const id = req.params.id
-        const user = await userModels.getUserById(id)
-        res.json(user)
-    } catch (error) {
-        next(error)
-    }
-})
-router.put('/update/:id', async (req, res, next) => {
-    try {
-        const id = req.params.id
-        const data = {
-            FirstName: req.body.FirstName,
-            LastName: req.body.LastName,
-            Email: req.body.Email,
-            Password: req.body.Password,
-            PhoneNumbe: req.body.PhoneNumber
+        const { email, password } = req.body;
+        const user = await userModels.findUserByEmail(email);
+        if (user.length === 0) {
+            return res.status(404).json({ error: 'email incorrect' });
         }
-        const user = await userModels.updateUserInfo(data, id)
-        res.json(user)
-    } catch (error) {
-        next(error)
-    }
-})
-router.delete('/:id', async (req, res, next) => {
-    try {
-        const id = req.params.id
-        const user = await userModels.deleteUser(id)
-        res.json(user)
+        const match = bcrypt.compare(password, user[0].Password)
+        if (match) {
+            const accessToken = jwt.sign({ userID: user[0].UserID }, 'secret');
+            res.cookie('jwt', accessToken, {
+                httpOnly: true,
+                maxAge: 24 * 60 * 60 * 1000 //  1 day
+            })
+            res.send('success')
+        } else {
+            return res.status(404).json({ error: 'User not found or email incorrect' });
+        }
 
     } catch (error) {
-        next(error)
+        throw Error
     }
 })
+// /authentification
+
+router.get('/authentication', async (req, res) => {
+    try {
+        const cookie = req.cookies['jwt'];
+
+        if (!cookie) {
+            return res.status(401).json({ error: 'Unauthenticated' });
+        }
+
+        const decoded = jwt.verify(cookie, 'secret');
+
+        if (!decoded) {
+            return res.status(401).json({ error: 'Unauthenticated' });
+        }
+
+        const user = await userModels.findUserId(decoded.userID);
+
+        if (!user) {
+            return res.status(404).json({ error: 'User not found' });
+        }
+
+        // Send only non-sensitive user data in the response
+        const { password, ...userData } = user;
+        res.json(userData);
+    } catch (error) {
+        console.error('Authentication failed:', error);
+        res.status(500).json({ error: 'Authentication failed' });
+    }
+});
+
+// /logout
+router.post('/logout', (req, res) => {
+    try {
+        res.clearCookie('jwt');
+        res.send({ message: 'success' });
+    } catch (error) {
+        throw error;
+    }
+});
+
+
+
+
+
+
+
+
 module.exports = router
