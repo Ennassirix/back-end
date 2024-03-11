@@ -86,6 +86,14 @@ router.post('/logout', (req, res) => {
     }
 });
 
+router.get('/allUsers',async (req,res)=>{
+    try {
+        const users = await userModels.getAllusers()
+        res.json(users)
+    } catch (error) {
+        res.status(500).json({ error: 'get users failed' });
+    }
+})
 
 
 

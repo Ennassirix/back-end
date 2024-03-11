@@ -34,9 +34,18 @@ async function findUserId(id) {
         throw error; // Throw the error to be caught by the calling function or middleware
     }
 }
-
+async function getAllusers() {
+    try {
+        const [row] = await pool.query('SELECT UserID,FirstName, LastName, Email, PhoneNumber FROM users');
+        return row;
+    } catch (error) {
+        console.error('Failed to find a user:', error);
+        throw error; 
+    }
+}
 module.exports = {
     createUser,
     findUserByEmail,
-    findUserId
+    findUserId,
+    getAllusers
 }
