@@ -6,7 +6,6 @@ to create a user => http://localhost:3001/user/register
 for log in => http://localhost:3001/user/login
 authentication => http://localhost:3001/user/authentication
 
-
 # Products API's
 create a product => http://localhost:3001/Products //data in the body
 get all products => http://localhost:3001/Products

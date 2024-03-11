@@ -6,7 +6,7 @@ const productRouter = require('./Routers/productsRouters')
 const categoriesRouter = require('./Routers/categoryRouters')
 const cartRouter = require('./Routers/cartRoutes')
 const userRouter = require('./Routers/userRouters')
-
+const ordersRouter = require('./Routers/orderRouter')
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cors({
@@ -42,9 +42,8 @@ app.use('/cart/user/:id', cartRouter)
 // user Routes :
 app.use('/user', userRouter) // get all users/delete a user : => 
 
-
-
-
+// orders : 
+app.use('/orders',ordersRouter)
 
 
 
