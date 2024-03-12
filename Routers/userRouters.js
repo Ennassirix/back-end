@@ -29,12 +29,13 @@ router.post('/login', async (req, res) => {
         if (user.length === 0) {
             return res.status(404).json({ error: 'email incorrect' });
         }
-        const match = bcrypt.compare(password, user[0].Password)
+        const match = await bcrypt.compare(password, user[0].Password)
         if (match) {
             const accessToken = jwt.sign({ userID: user[0].UserID }, 'secret');
             res.cookie('jwt', accessToken, {
                 httpOnly: true,
-                maxAge: 24 * 60 * 60 * 1000 //  1 day
+                maxAge: 24 * 60 * 60 * 1000,
+                secure : true //  s1 day
             })
             res.send('success')
         } else {
@@ -42,7 +43,8 @@ router.post('/login', async (req, res) => {
         }
 
     } catch (error) {
-        throw Error
+        console.error('Error during login:', error);
+        res.status(500).json({ error: 'Internal Server Error' });
     }
 })
 // /authentification
@@ -86,7 +88,7 @@ router.post('/logout', (req, res) => {
     }
 });
 
-router.get('/allUsers',async (req,res)=>{
+router.get('/allUsers', async (req, res) => {
     try {
         const users = await userModels.getAllusers()
         res.json(users)

@@ -2,9 +2,9 @@ const mysql = require('mysql2/promise');
 
 const pool = mysql.createPool({
     host: 'localhost',
-    user: 'Root',  // Assuming your MySQL username is 'root'
-    database: 'finel_db',
-    password: '123456'
+    user: 'root',  // Assuming your MySQL username is 'root'
+    database: 'products',
+    password: ''
 });
 
 pool.getConnection()

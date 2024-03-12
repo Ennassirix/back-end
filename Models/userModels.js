@@ -27,7 +27,7 @@ async function findUserByEmail(email) {
 
 async function findUserId(id) {
     try {
-        const [row] = await pool.query('SELECT FirstName, LastName, Email, PhoneNumber FROM users WHERE UserID = ?', [id]);
+        const [row] = await pool.query('SELECT UserID, FirstName, LastName, Email, PhoneNumber FROM users WHERE UserID = ?', [id]);
         return row;
     } catch (error) {
         console.error('Failed to find a user:', error);
@@ -36,7 +36,7 @@ async function findUserId(id) {
 }
 async function getAllusers() {
     try {
-        const [row] = await pool.query('SELECT UserID,FirstName, LastName, Email, PhoneNumber FROM users');
+        const [row] = await pool.query('SELECT UserID ,FirstName, LastName, Email, PhoneNumber FROM users');
         return row;
     } catch (error) {
         console.error('Failed to find a user:', error);
