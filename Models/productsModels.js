@@ -55,8 +55,9 @@ async function getSortedProducts(sort, order) {
 // to update a product :
 async function updateProduct(id, data) {
     try {
-        const { Name, Description, ImageURL, Price, StockQuantity, CategoryID } = data
-        const [row] = await pool.query(' UPDATE Products SET Name=?,Description= ?,ImageURL= ?,Price= ?,StockQuantity= ?,CategoryID= ? WHERE ProductID = ?', [Name, Description, ImageURL, Price, StockQuantity, CategoryID, id])
+        const { Name, Description, ImageURL, Price, StockQuantity, CategoryID, GroupeID } = data
+        const [row] = await pool.query(' UPDATE Products SET Name=?,Description= ?,ImageURL= ?,Price= ?,StockQuantity= ?,CategoryID= ?,GroupeID = ? WHERE ProductID = ?',
+            [Name, Description, ImageURL, Price, StockQuantity, CategoryID, GroupeID, id])
         return row
     } catch (error) {
         console.error('Failed to update a  Product by id')
@@ -78,14 +79,16 @@ async function deleteProduct(id) {
 // create a product : 
 async function createProduct(data) {
     try {
-        const { ProductID, Name, Description, ImageURL, Price, StockQuantity, CategoryID } = data
-        const [row] = await pool.query('INSERT INTO Products(ProductID, Name, Description, ImageURL, Price, StockQuantity, CategoryID) VALUES(?,?,?,?,?,?,?)', [ProductID, Name, Description, ImageURL, Price, StockQuantity, CategoryID])
-        return row
+        const { Name, Description, ImageURL, Price, StockQuantity, CategoryID, GroupeID } = data;
+        const [row] = await pool.query('INSERT INTO Products(Name, Description, ImageURL, Price, StockQuantity, CategoryID, GroupeID) VALUES(?,?,?,?,?,?,?)',
+            [Name, Description, ImageURL, Price, StockQuantity, CategoryID, GroupeID]);
+        return row;
     } catch (error) {
-        console.error('Failed to create a  Product ')
-        throw error
+        console.error('Failed to create a Product:', error); // Added the error message in the console.log
+        throw error;
     }
 }
+
 
 module.exports = {
     getAllProducts,

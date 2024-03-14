@@ -7,11 +7,13 @@ const categoriesRouter = require('./Routers/categoryRouters')
 const cartRouter = require('./Routers/cartRoutes')
 const userRouter = require('./Routers/userRouters')
 const ordersRouter = require('./Routers/orderRouter')
+const groupRouter = require('./Routers/groupRouter')
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(cors({
     credentials: true,
-    origin: ['http://localhost:3000']
+    origin: ['http://localhost:3000'],
+    methods: ["GET", "POST"],
 }))
 
 
@@ -45,6 +47,7 @@ app.use('/user', userRouter) // get all users/delete a user : =>
 // orders : 
 app.use('/orders',ordersRouter)
 
-
+// group Routes : 
+app.use('/groupes',groupRouter)
 
 app.listen(3001)

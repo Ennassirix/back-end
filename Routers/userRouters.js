@@ -26,27 +26,30 @@ router.post('/login', async (req, res) => {
     try {
         const { email, password } = req.body;
         const user = await userModels.findUserByEmail(email);
-        if (user.length === 0) {
-            return res.status(404).json({ error: 'email incorrect' });
-        }
-        const match = await bcrypt.compare(password, user[0].Password)
-        if (match) {
-            const accessToken = jwt.sign({ userID: user[0].UserID }, 'secret');
-            res.cookie('jwt', accessToken, {
-                httpOnly: true,
-                maxAge: 24 * 60 * 60 * 1000,
-                secure : true //  s1 day
-            })
-            res.send('success')
+
+        if (user.length !== 0) {
+            const match = await bcrypt.compare(password, user[0].Password);
+            if (match) {
+                const accessToken = jwt.sign({ userID: user[0].UserID }, 'secret'); // Using environment variable for JWT secret
+                res.cookie('jwt', accessToken, {
+                    httpOnly: true,
+                    maxAge: 24 * 60 * 60 * 1000,
+                    secure: true, // Set to true if served over HTTPS
+                    sameSite: 'strict' // Better to set sameSite attribute
+                });
+                return res.status(200).json({ success: true }); // Returning JSON object for consistency
+            } else {
+                return res.status(401).json({ error: 'Invalid email or password' }); // Change status code to 401 for unauthorized
+            }
         } else {
-            return res.status(404).json({ error: 'User not found or email incorrect' });
+            return res.status(401).json({ error: 'Invalid email or password' }); // Change status code to 401 for unauthorized
         }
 
     } catch (error) {
         console.error('Error during login:', error);
-        res.status(500).json({ error: 'Internal Server Error' });
+        return res.status(500).json({ error: 'Internal Server Error' });
     }
-})
+});
 // /authentification
 
 router.get('/authentication', async (req, res) => {
@@ -79,7 +82,7 @@ router.get('/authentication', async (req, res) => {
 });
 
 // /logout
-router.post('/logout', (req, res) => {
+router.get('/logout', (req, res) => {
     try {
         res.clearCookie('jwt');
         res.send({ message: 'success' });
@@ -96,11 +99,6 @@ router.get('/allUsers', async (req, res) => {
         res.status(500).json({ error: 'get users failed' });
     }
 })
-
-
-
-
-
 
 
 module.exports = router

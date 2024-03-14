@@ -12,24 +12,7 @@ router.get('/api/allOrders', async (req, res) => {
     }
 })
 
-// api/addOrder
-// router.post('/api/addOrder', async (req, res) => {
-//     try {
-//         const data = {
-//             UserID: req.body.UserID,
-//             OrderDate: req.body.OrderDate,
-//             TotalAmount: req.body.TotalAmount,
-//             OrderID: req.body.OrderID,
-//             ProductID: req.body.ProductID,
-//             Quantity: req.body.Quantity,
-//             Subtotal: req.body.Subtotal
-//         }
-//         const orders = await orderModel.addOrder(data)
-//         res.json(orders)
-//     } catch (error) {
-//         res.status(401).send({ message: 'failed to add an orders' })
-//     }
-// })
+
 router.post('/api/addOrder', async (req, res) => {
     try {
         const data = {

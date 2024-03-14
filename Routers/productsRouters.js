@@ -62,7 +62,8 @@ router.put('/:id', async (req, res, next) => {
             ImageURL: req.body.ImageURL,
             Price: req.body.Price,
             StockQuantity: req.body.StockQuantity,
-            CategoryID: req.body.CategoryID
+            CategoryID: req.body.CategoryID,
+            GroupeID : req.body.GroupeID
         };
         const product = await productModel.updateProduct(id, data)
         res.json(product)
@@ -83,13 +84,13 @@ router.delete('/:id', async (req, res, next) => {
 router.post('/', async (req, res, next) => {
     try {
         const data = {
-            ProductID: req.body.ProductID,
             Name: req.body.Name,
             Description: req.body.Description,
             ImageURL: req.body.ImageURL,
             Price: req.body.Price,
             StockQuantity: req.body.StockQuantity,
-            CategoryID: req.body.CategoryID
+            CategoryID: req.body.CategoryID,
+            GroupeID : req.body.GroupeID
         }
         const product = await productModel.createProduct(data)
         res.json(product)
