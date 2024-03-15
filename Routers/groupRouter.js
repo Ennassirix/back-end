@@ -3,6 +3,8 @@ const router = express.Router()
 const groupModel = require('../Models/groupModels')
 const multer = require('multer');
 const path = require('path');
+const fs = require('fs-extra')
+
 // /allGroup
 router.get('/allGroup', async (req, res) => {
     try {
@@ -22,48 +24,43 @@ router.get('/groupById/:id', async (req, res) => {
         console.log('', error)
     }
 })
-// createGroupe
+
+// => abderezake : C:\\Users\\bouka\\OneDrive\\Bureau\\Projet Fin D\'etude\\front-end\\public\\images
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, './images'); // Set the destination folder for uploaded images
+        cb(null, 'C:\\Users\\Ayoub\\Desktop\\React\\book_r\\public\\images'); // Set the destination folder for uploaded images
     },
     filename: function (req, file, cb) {
         cb(null, Date.now() + path.extname(file.originalname)); // Set the filename for uploaded images
     }
 });
-
+// Initialize multer with storage configuration
 const upload = multer({ storage: storage });
-// router.post('/createGroupe', upload.single('image') ,async (req, res) => {
-//     try {
-//         const data = {
-//             Name: req.body.Name,
-//             ImageURL: req.body.ImageURL,
-//             CategoryID: req.body.CategoryID
-//         }
-//         const group = await groupModel.addGroup(data)
-//         res.status(201).json(group)
-//     } catch (error) {
-//         console.log('', error)
-//     }
-// })
+
+// Handle POST request to '/createGroupe' endpoint
 router.post('/createGroupe', upload.single('image'), async (req, res, next) => {
     try {
+        // Check if file was uploaded
         if (!req.file) {
             return res.status(400).json({ error: 'No file uploaded' });
         }
-        const { Name,CategoryID } = req.body;
+        // Extract data from request body
+        const { Name, CategoryID } = req.body;
+        // Construct data object
         const data = {
             Name,
-            ImageURL: req.file.path,
+            ImageURL: req.file.filename, // Use filename instead of path
             CategoryID
         };
-        const group = await groupModel.addGroup(data)
-        res.json(group);
+        // Add group to database
+        const group = await groupModel.addGroup(data);
+        res.json(group); // Send response with added group data
     } catch (error) {
         console.error('Error uploading file:', error);
-        res.status(500).json({ error: 'Internal server error' });
+        res.status(500).json({ error: 'Internal server error' }); // Send internal server error response
     }
 });
+
 // updateGroupe/:id
 router.put('/updateGroupe/:id', async (req, res) => {
     try {

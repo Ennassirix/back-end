@@ -84,17 +84,17 @@ router.delete('/:id', async (req, res, next) => {
 })
 
 
-// Multer storage configuration
-// const directory = 'C:\\Users\\Ayoub\\Desktop\\eff\\src\\images';
-// if (!fs.existsSync(directory)) {
-//     fs.mkdirSync(directory, { recursive: true });
-//     console.log('Directory created successfully.');
-// } else {
-//     console.log('Directory already exists.');
-// }
+// Multer storage configuration C:\\Users\\Ayoub\Desktop\\React\book_r\\public
+const directory = 'C:\\Users\\Ayoub\\Desktop\\React\\book_r\\public';
+if (!fs.existsSync(directory)) {
+    fs.mkdirSync(directory, { recursive: true });
+    console.log('Directory created successfully.');
+} else {
+    console.log('Directory already exists.');
+}
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        cb(null, './images'); // Set the destination folder for uploaded images
+        cb(null, directory); // Set the destination folder for uploaded images
     },
     filename: function (req, file, cb) {
         cb(null, Date.now() + path.extname(file.originalname)); // Set the filename for uploaded images
