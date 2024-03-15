@@ -9,6 +9,8 @@ const userRouter = require('./Routers/userRouters')
 const ordersRouter = require('./Routers/orderRouter')
 const groupRouter = require('./Routers/groupRouter')
 app.use(express.json())
+app.use(express.static('public'))
+app.use(express.static('files'))
 app.use(express.urlencoded({ extended: true }))
 app.use(cors({
     credentials: true,

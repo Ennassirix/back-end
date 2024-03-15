@@ -1,7 +1,8 @@
 const express = require('express')
 const router = express.Router()
 const groupModel = require('../Models/groupModels')
-
+const multer = require('multer');
+const path = require('path');
 // /allGroup
 router.get('/allGroup', async (req, res) => {
     try {
@@ -22,19 +23,47 @@ router.get('/groupById/:id', async (req, res) => {
     }
 })
 // createGroupe
-router.post('/createGroupe', async (req, res) => {
-    try {
-        const data = {
-            Name: req.body.Name,
-            ImageURL: req.body.ImageURL,
-            CategoryID: req.body.CategoryID
-        }
-        const group = await groupModel.addGroup(data)
-        res.status(201).json(group)
-    } catch (error) {
-        console.log('', error)
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        cb(null, './images'); // Set the destination folder for uploaded images
+    },
+    filename: function (req, file, cb) {
+        cb(null, Date.now() + path.extname(file.originalname)); // Set the filename for uploaded images
     }
-})
+});
+
+const upload = multer({ storage: storage });
+// router.post('/createGroupe', upload.single('image') ,async (req, res) => {
+//     try {
+//         const data = {
+//             Name: req.body.Name,
+//             ImageURL: req.body.ImageURL,
+//             CategoryID: req.body.CategoryID
+//         }
+//         const group = await groupModel.addGroup(data)
+//         res.status(201).json(group)
+//     } catch (error) {
+//         console.log('', error)
+//     }
+// })
+router.post('/createGroupe', upload.single('image'), async (req, res, next) => {
+    try {
+        if (!req.file) {
+            return res.status(400).json({ error: 'No file uploaded' });
+        }
+        const { Name,CategoryID } = req.body;
+        const data = {
+            Name,
+            ImageURL: req.file.path,
+            CategoryID
+        };
+        const group = await groupModel.addGroup(data)
+        res.json(group);
+    } catch (error) {
+        console.error('Error uploading file:', error);
+        res.status(500).json({ error: 'Internal server error' });
+    }
+});
 // updateGroupe/:id
 router.put('/updateGroupe/:id', async (req, res) => {
     try {

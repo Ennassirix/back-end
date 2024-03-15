@@ -71,10 +71,8 @@ router.get('/authentication', async (req, res) => {
         if (!user) {
             return res.status(404).json({ error: 'User not found' });
         }
-
         // Send only non-sensitive user data in the response
-        const { password, ...userData } = user;
-        res.json(userData);
+        res.json(user);
     } catch (error) {
         console.error('Authentication failed:', error);
         res.status(500).json({ error: 'Authentication failed' });
